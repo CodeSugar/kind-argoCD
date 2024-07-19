@@ -24,6 +24,9 @@ resource "kubectl_manifest" "Argo" {
 }
 
 resource "kubectl_manifest" "argoIngress" {
+    depends_on = [
+      kubectl_manifest.nginx
+    ]
     yaml_body = <<YAML
 apiVersion: networking.k8s.io/v1
 kind: Ingress

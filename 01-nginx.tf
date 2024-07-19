@@ -3,7 +3,7 @@ data "http" "nginx" {
 }
 
 data "kubectl_file_documents" "nginx" {
-    content = data.http.argoCD.response_body
+    content = data.http.nginx.response_body
 }
 
 resource "kubectl_manifest" "nginx" {
