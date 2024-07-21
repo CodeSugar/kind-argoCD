@@ -12,7 +12,7 @@ sudo dpkg -i /tmp/k9s_linux_amd64.deb
 
 ---
 
-INstall terraform 
+Install terraform 
 
 sudo apt-get update && sudo apt-get install -y gnupg software-properties-common
 wget -O- https://apt.releases.hashicorp.com/gpg | \
@@ -23,3 +23,11 @@ https://apt.releases.hashicorp.com $(lsb_release -cs) main" | \
 sudo tee /etc/apt/sources.list.d/hashicorp.list
 sudo apt update
 sudo apt-get install terraform
+
+
+---
+
+Get initial admin password for ArgoCD
+
+kubectl get secret argocd-initial-admin-secret -n=argocd -o jsonpath='{.data.password}' | base64 --decode
+
