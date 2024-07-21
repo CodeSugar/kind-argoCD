@@ -21,31 +21,38 @@ resource "kubectl_manifest" "Argo" {
     ]
     for_each  = data.kubectl_file_documents.docs.manifests
     yaml_body = each.value
+    override_namespace = "argocd"
 }
 
 resource "kubectl_manifest" "argoIngress" {
     depends_on = [
       kubectl_manifest.nginx
     ]
+    override_namespace = "argocd"
     yaml_body = <<YAML
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: argocd-server-ingress
-  namespace: default
+  name: example-ingress
   annotations:
-    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
-  ingressClassName: nginx
   rules:
   - http:
       paths:
-      - path: /
-        pathType: Prefix
+      - pathType: Prefix
+        path: /foo(/|$)(.*)
         backend:
           service:
-            name: argocd-server
+            name: foo-service
             port:
-              name: http
+              number: 8080
+      - pathType: Prefix
+        path: /bar(/|$)(.*)
+        backend:
+          service:
+            name: bar-service
+            port:
+              number: 8080
 YAML
 }
