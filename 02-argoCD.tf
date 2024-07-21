@@ -16,7 +16,7 @@ YAML
 }
 
 data "kubectl_file_documents" "argoConfiguration" {
-    content = file("multi-doc-manifest.yaml")
+    content = file("argocd-cmd-params-cm.yaml")
 }
 
 resource "kubectl_manifest" "argoConfiguration" {
@@ -27,7 +27,7 @@ resource "kubectl_manifest" "argoConfiguration" {
 
 resource "kubectl_manifest" "Argo" {
     depends_on = [
-        kubectl_manifest.namespaceArgo
+        kubectl_manifest.namespaceArgo,
         kubectl_manifest.argoConfiguration
     ]
     for_each  = data.kubectl_file_documents.docs.manifests
