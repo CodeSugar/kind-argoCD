@@ -2,6 +2,10 @@ data "http" "argoCD" {
   url = "https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml"
 }
 
+data "kubectl_file_documents" "argoInstall" {
+    content = file("02-argoCD-install.yaml")
+}
+
 data "kubectl_file_documents" "docs" {
     content = data.http.argoCD.response_body
 }
@@ -16,13 +20,12 @@ YAML
 }
 
 data "kubectl_file_documents" "argoConfiguration" {
-    content = file("argocd-cmd-params-cm.yaml")
+    content = file("02-argoCD-argocd-cmd-params-cm.yaml")
 }
 
 resource "kubectl_manifest" "argoConfiguration" {
     for_each  = data.kubectl_file_documents.argoConfiguration.manifests
     yaml_body = each.value
-    override_namespace = "argocd"
 }
 
 resource "kubectl_manifest" "Argo" {
@@ -30,7 +33,7 @@ resource "kubectl_manifest" "Argo" {
         kubectl_manifest.namespaceArgo,
         kubectl_manifest.argoConfiguration
     ]
-    for_each  = data.kubectl_file_documents.docs.manifests
+    for_each  = data.kubectl_file_documents.argoInstall.manifests
     yaml_body = each.value
     override_namespace = "argocd"
 }
@@ -50,7 +53,7 @@ metadata:
   namespace: argocd
   annotations:
 #    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+#    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
 spec:
   ingressClassName: nginx
   rules:
