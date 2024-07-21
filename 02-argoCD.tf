@@ -15,14 +15,27 @@ metadata:
 YAML
 }
 
+data "kubectl_file_documents" "argoConfiguration" {
+    content = file("multi-doc-manifest.yaml")
+}
+
+resource "kubectl_manifest" "argoConfiguration" {
+    for_each  = data.kubectl_file_documents.argoConfiguration.manifests
+    yaml_body = each.value
+    override_namespace = "argocd"
+}
+
 resource "kubectl_manifest" "Argo" {
     depends_on = [
         kubectl_manifest.namespaceArgo
+        kubectl_manifest.argoConfiguration
     ]
     for_each  = data.kubectl_file_documents.docs.manifests
     yaml_body = each.value
     override_namespace = "argocd"
 }
+
+
 
 resource "kubectl_manifest" "argoIngress" {
     depends_on = [
@@ -33,26 +46,27 @@ resource "kubectl_manifest" "argoIngress" {
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: example-ingress
+  name: argocd-server-http-ingress
+  namespace: argocd
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
+#    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
 spec:
+  ingressClassName: nginx
   rules:
   - http:
       paths:
-      - pathType: Prefix
-        path: /foo(/|$)(.*)
+      - path: /
+        pathType: Prefix
         backend:
           service:
-            name: foo-service
+            name: argocd-server
             port:
-              number: 8080
-      - pathType: Prefix
-        path: /bar(/|$)(.*)
-        backend:
-          service:
-            name: bar-service
-            port:
-              number: 8080
+              name: http
+#    host: argocd.example.com
+#  tls:
+#  - hosts:
+#    - argocd.example.com
+#    secretName: argocd-ingress-http
 YAML
 }
