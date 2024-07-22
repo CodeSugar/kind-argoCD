@@ -1,5 +1,22 @@
 # kind-argoCD
-A simple project to demonstrate the uses of argoCD
+
+A project to demonstrate the uses of Terraform ( IaaC ), KinD ( Kubernetes in Docker ) and ArgoCD. 
+
+All the setup can be run in Github Copilot, features:
+
+- Initialize the Kubernetes Cluster using Terraform
+- Setup Nginx Ingress in the Cluster
+- Setup ArgoCD in the cluster
+- Ingress definition for ArgoCD using Nginx
+
+Future features
+
+- Add KinD load balancer
+- Add example http endpoint using KinD Loadbalancer
+- Add argo Workflows 
+- Add visualization for Kubernetes Cluster
+- Add users roles for ArgoCD
+- Add argoCD projects
 
 
 ---
