@@ -10,7 +10,7 @@ data "kubectl_file_documents" "docs" {
     content = data.http.argoCD.response_body
 }
 
-resource "kubectl_manifest" "namespaceArgo" {
+resource "kubectl_manifest" "namespaceArgoCD" {
     yaml_body = <<YAML
 kind: Namespace
 apiVersion: v1
@@ -30,7 +30,7 @@ resource "kubectl_manifest" "argoConfiguration" {
 
 resource "kubectl_manifest" "Argo" {
     depends_on = [
-        kubectl_manifest.namespaceArgo,
+        kubectl_manifest.namespaceArgoCD,
         kubectl_manifest.argoConfiguration
     ]
     for_each  = data.kubectl_file_documents.argoInstall.manifests
