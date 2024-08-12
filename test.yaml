@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: apidummy-deployment
+ labels:
+   app: MyApp
+spec:
+ replicas: 2
+ selector:
+   matchLabels:
+     app: apidummy-app
+ template:
+   metadata:
+     labels:
+       app: apidummy-app
+   spec:
+     terminationGracePeriodSeconds: 30
+     containers:
+     - name: http
+       image: gitea.codesugar.mx/codesugar/apidummy:v0.5.1
+       readinessProbe:
+        httpGet:
+          path: /api_dummy/healthz
+          port: 3000 
+        initialDelaySeconds: 5
+       livenessProbe:
+        httpGet:
+          path: /api_dummy/healthz
+          port: 3000
+        initialDelaySeconds: 10
+        periodSeconds: 10
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: apidummy-service
+spec:
+  type: LoadBalancer
+  externalTrafficPolicy: Local
+  selector:
+    app: apidummy-app
+  ports:
+  # Default port used by the image
+  - port: 3000

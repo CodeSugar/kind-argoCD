@@ -61,3 +61,11 @@ mkdir /tmp/cloud-provider-kind
 wget https://github.com/kubernetes-sigs/cloud-provider-kind/releases/download/v0.3.0/cloud-provider-kind_0.3.0_linux_amd64.tar.gz -P /tmp/cloud-provider-kind/
 tar -xzvf /tmp/cloud-provider-kind/cloud-provider-kind_0.3.0_linux_amd64.tar.gz  -C /tmp/cloud-provider-kind/
 ```
+
+---
+
+### Demo argo changes
+
+Add repo 
+
+while true; do curl 172.18.0.4:3000/api_dummy/hostname; echo; done
